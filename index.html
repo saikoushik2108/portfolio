@@ -3,102 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MY PORTFOLIO</title>
+    <title>MYPORTFOLIO</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://kit.fontawesome.com/a12ee7736a.js" crossorigin="anonymous"></script>
 </head>
 <body>
-    <header>
-        <h1>Welcome to My Portfolio</h1>
-    <a href="">
-        <button>About</button>
-    </a>
-    <a href="">
-        <button>Skills</button>
-    </a>
-    <a href="">
-        <button>Projects</button>
-    </a>
-    <a href="">
-        <button>Contact</button>
-    </a>
+    <div id="header">
+        <div class="container">
+            <nav>
+                <img src="images/mobilelogo.jpeg" class="logo">
+                <ul id="sidemenu">
+                    <li><a href="#header">Home</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#">Projects</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                    <i class="fa-solid fa-circle-xmark" onclick="closemenu()"></i>
+                </ul>
+                <i class="fa-solid fa-list" onclick="openmenu()"></i>
+            </nav>
+            <div class="header-text">
+                <h1>Hi, I'm <span> Sai Koushik </span> <br> From India</h1>
+            </div>
+        </div>
 
-    </header>
-    <main>
-          <section id="about">
-            <h1>Sai Koushik CBIT</h1>
+    </div>
+    <!----------------About-------------------->
+    <div id="about">
+        <div class="container">
+            <div class="row">
+                <div class="col1">
+                    <img src="images/img.jpeg" >
+                </div>
+                <div class="col2">
+                    <h1 class="subtitle">About Me</h1>
+                    <p> I am a <span><b>Computer Science and Engineering (Artificial Intelligence and Machine Learning)</b></span> undergraduated at <span><b>Chaitanya Bharathi Institute of Technology </b> </span>
+                    with a strong foundation in programming and data structures. <br>
+                    </p>
+                        <div class="tab-titles">
+                            <p class="tab-links active-link" onclick="opentab('skills')"><b>Skills</b></p>
+                            <p class="tab-links" onclick="opentab('Experience')"><b>Expereince</b></p>
+                            <p class="tab-links" onclick="opentab('Education')"><b>Education</b></p>
+                        </div>
+                        <div class="tab-contents active-tab" id="skills">
+                            <ul>
+                                <li><span>Coding</span><br>Learnt Java and C++</li>
+                                <li><span>Algorithm Designing</span><br>Learnt Data Structures and 
+                                    Algorithms</li>
+                                <li><span>Web Development</span><br>Web app Development</li>
+                            </ul>
+                        </div>
+                         <div class="tab-contents" id="Experience">
+                            <ul>
+                                <li><span>Current</span><br>No Experience</li>
+                                
+                            </ul>
+                        </div>
+                         <div class="tab-contents" id="Education">
+                            <ul>
+                                <li><span>2022</span><br>Completed SSC at Geetha High School</li>
+                                <li><span>2024</span><br>Completed intermediate at Narayana Junior College</li>
+                                <li><span>2028</span><br>Graduated from CBIT</li>
+                            </ul>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+   <!------------------Contact-------------->
 
-             <img src="IMG_6785.JPG" alt="A photo of me" height="400" width="400">
-             <ul>
-             <li>I am a <b> <i>Computer Science and Engineering (Artificial Intelligence & Machine Learning)</i> </b> undergraduate at ,<b> <i>Chaitanya Bharathi Institute of Technology </i> </b> .</li>
-             <li>Passionate about building AI-driven solutions that solve real-world problems using machine learning, deep learning, and data analytics.</li>
-             <li>Interested in building end-to-end projects, from problem understanding to implementation and optimization.</li>
-             <li>Continuously improving technical and problem-solving skills through projects, online courses, and hands-on practice.</li>
-             <li>Aspiring to become a skilled AI/ML Engineer contributing to innovative and impactful technology solutions.</li>
-             </ul>
-             </section>
-          <section id="skills">
-            <h1> My Skills </h1>
-            <ol>
-            <li>DS Basics</li>
-            <li>Certified Java Programmer</li>
-            <li>HTML Basics</li>
-            <li>CSS Basics</li>
-            <li>Python Basics</li>
-            </ol>
-          </section>
-          <section id="projects">
+   <div id="contact">
+    <div class="container">
+        <div class="row">
+            <div class="contact-left">
+                <h1 class="sub-title">Contact Me</h1>
+                <p><i class="fa-regular fa-paper-plane"></i> saikoushik.2108@gmail.com</p>
+                <p> <i class="fa-solid fa-phone"></i> 7331132108</p>
+                <div class="social-icons">
+                    <a href="https://www.instagram.com/sai_koushik_2108?igsh=N2p1bzY3ajR6NGh1" target="_blank"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="https://www.linkedin.com/in/palthi-sai-koushik-711778369?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank"><i class="fa-brands fa-linkedin"></i></a>
+                    <a href="https://x.com/koushik_sa14436" target="_blank"><i class="fa-brands fa-x-twitter"></i></a>
+                    <a href="https://github.com/saikoushik2108" target="_blank"><i class="fa-brands fa-github"></i></a>
+                </div>
+            </div>
+            <div class="contact-right">
+                <form >
+                    <input type="text" name="Name" placeholder="Your Name" required>
+                    <input type="email" name="email" placeholder="Your Email" required>
+                    <textarea name="Message" rows="5" placeholder="Your Message"></textarea>
+                    <button type="submit" class="btn btn2">Submit</button>
+                </form>
+                <span id="msg">  </span>
+            </div>
+        </div>
+    </div>
+    <div class="copyright">
+        <p>Copyright <i class="fa-solid fa-copyright"></i> saikoushik. Made with <i class="fa-solid fa-heart"></i>.</p>
+    </div>
+   </div>
+    <script>
+        var tablinks = document.getElementsByClassName("tab-links");
+        var tabcontents = document.getElementsByClassName("tab-contents");
 
-            <h1>My Projects</h1>
-            <table></table>
-          </section>
-          <section id="Contact"> 
-                <h1>Contact Me</h1>
-       <p>Feel free to get in touch with me using the below form :</p>
+        function opentab(tabname){
+            for(tablink of tablinks){
+                tablink.classList.remove("active-link");
+            }
+             for(tabcontent of tabcontents){
+                tabcontent.classList.remove("active-tab");
+            }
+            event.currentTarget.classList.add("active-link");
+            document.getElementById(tabname).classList.add("active-tab");
+        }
+    </script>
+    <script>
+        var sidemenu = document.getElementById("sidemenu");
 
-       <form action="">
-        <label for="name">Name:</label>
-        <input type="text">
-        <br>
+        function openmenu(){
+            sidemenu.style.right = "0";
 
-        <label for="email">Email:</label>
-        <input type="email">
-        <br>
-
-        <b> Choose Your Gender:</b>
-        <input type="radio" id="male" value="male">
-        <label for="male">Male</label>
-        <input type="radio" id="female" value="female">
-        <label for="female">Female</label>
-        <br>
-
-        <b>Select your interests:</b>
-        <input type="checkbox" id="coding" value="coding">
-        <label for="coding">Coding</label>
-
-        <input type="checkbox" id="reading" value="reading">
-        <label for="reading">Reading</label>
-
-        <br>
-
-        <label for="bio">Bio (up to 200 Characters):</label>
-        <input type="text">
-        <br>
-
-        <button type="submit">Submit</button>
-
-       </form>
-          </section>
-
-
-    </main>
-          
-    <footer>
-
-
-    </footer>
+        }
+        function closemenu(){
+            sidemenu.style.right = "-200px";
+        }
+    </script>
     
- 
- 
-
- 
+    
 </body>
 </html>
