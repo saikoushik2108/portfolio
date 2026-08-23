@@ -3,141 +3,430 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MYPORTFOLIO</title>
+    <title>Sai Koushik | AI & Machine Learning Engineer | Portfolio</title>
+    <meta name="description" content="Personal portfolio of Sai Koushik - Computer Science & Engineering (AI & ML) undergrad at CBIT. Showcasing machine learning pipelines, algorithms, and full-stack web applications.">
+    <meta name="keywords" content="Sai Koushik, Portfolio, AI Engineer, Machine Learning, CBIT, Computer Science, Java, C++, Python, Supabase">
+    <meta name="author" content="Sai Koushik">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- Main Stylesheet -->
     <link rel="stylesheet" href="style.css">
-    <script src="https://kit.fontawesome.com/a12ee7736a.js" crossorigin="anonymous"></script>
+
+    <!-- Supabase Client CDN (Official v2) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-    <div id="header">
-        <div class="container">
+
+    <!-- INTERACTIVE BACKGROUND CANVAS, MESH GRID & AMBIENT GLOW ORBS -->
+    <canvas id="bg-canvas"></canvas>
+    <div class="bg-grid-pattern"></div>
+    <div class="cursor-spotlight" id="cursor-spotlight"></div>
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+    <div class="ambient-orb orb-3"></div>
+    <div class="ambient-orb orb-4"></div>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- GLASS NAVIGATION BAR -->
+    <header class="navbar" id="navbar">
+        <div class="container nav-container">
+            <a href="#home" class="logo-wrap">
+                <div class="logo-badge">SK</div>
+                <div class="logo-text">Sai<span>Koushik</span></div>
+            </a>
+
             <nav>
-                <img src="images/mobilelogo.jpeg" class="logo">
-                <ul id="sidemenu">
-                    <li><a href="#header">Home</a></li>
-                    <li><a href="#about">About</a></li>
-                    <li><a href="#">Projects</a></li>
-                    <li><a href="#contact">Contact</a></li>
-                    <i class="fa-solid fa-circle-xmark" onclick="closemenu()"></i>
+                <ul class="nav-menu" id="nav-links">
+                    <button class="menu-close" id="menu-close" aria-label="Close Navigation Menu"><i class="fa-solid fa-xmark"></i></button>
+                    <li><a href="#home" class="nav-link active">Home</a></li>
+                    <li><a href="#about" class="nav-link">About</a></li>
+                    <li><a href="#projects" class="nav-link">Projects</a></li>
+                    <li><a href="#terminal" class="nav-link">Console</a></li>
+                    <li><a href="#contact" class="nav-link">Contact</a></li>
                 </ul>
-                <i class="fa-solid fa-list" onclick="openmenu()"></i>
             </nav>
-            <div class="header-text">
-                <h1>Hi, I'm <span> Sai Koushik </span> <br> From India</h1>
+
+            <div class="nav-cta">
+                <a href="#contact" class="btn btn-primary btn-sm">Let's Talk</a>
+                <button class="menu-toggle" id="menu-toggle" aria-label="Open Navigation Menu">
+                    <i class="fa-solid fa-bars-staggered"></i>
+                </button>
             </div>
         </div>
+    </header>
 
+    <main>
+        <!-- HERO SECTION -->
+        <section class="hero-section" id="home">
+            <div class="container">
+                <div class="hero-grid">
+                    <div class="hero-content reveal-on-scroll">
+                        <div class="hero-greeting">
+                            <span class="wave">👋</span> Hello World, I'm
+                        </div>
+                        <h1 class="hero-title">
+                            Sai <span class="glow-name">Koushik</span>
+                        </h1>
+                        <div class="hero-typewriter">
+                            <span id="typewriter-text"></span><span class="typewriter-cursor">|</span>
+                        </div>
+                        <p class="hero-bio">
+                            Undergraduate at <strong>Chaitanya Bharathi Institute of Technology (CBIT)</strong> specializing in 
+                            <strong>Artificial Intelligence & Machine Learning</strong>. Passionate about architecting intelligent algorithms, 
+                            deep neural networks, and scalable web solutions.
+                        </p>
+
+                        <div class="hero-actions">
+                            <a href="#projects" class="btn btn-primary">
+                                <span>Explore Projects</span>
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </a>
+                            <a href="#contact" class="btn btn-outline">
+                                <span>Get in Touch</span>
+                                <i class="fa-regular fa-paper-plane"></i>
+                            </a>
+                        </div>
+
+                        <div class="hero-socials">
+                            <span class="hero-socials-label">Connect:</span>
+                            <a href="https://github.com/saikoushik2108" target="_blank" rel="noopener noreferrer" class="btn-icon" title="GitHub">
+                                <i class="fa-brands fa-github"></i>
+                            </a>
+                            <a href="https://www.linkedin.com/in/palthi-sai-koushik-711778369" target="_blank" rel="noopener noreferrer" class="btn-icon" title="LinkedIn">
+                                <i class="fa-brands fa-linkedin-in"></i>
+                            </a>
+                            <a href="https://x.com/koushik_sa14436" target="_blank" rel="noopener noreferrer" class="btn-icon" title="X (Twitter)">
+                                <i class="fa-brands fa-x-twitter"></i>
+                            </a>
+                            <a href="https://www.instagram.com/sai_koushik_2108" target="_blank" rel="noopener noreferrer" class="btn-icon" title="Instagram">
+                                <i class="fa-brands fa-instagram"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="hero-visual reveal-on-scroll">
+                        <div class="hero-avatar-card glass-card tilt-element">
+                            <div class="avatar-frame">
+                                <img src="images/img.jpeg" alt="Sai Koushik" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80'">
+                            </div>
+                            <div class="avatar-badge-float">
+                                <div class="badge-icon"><i class="fa-solid fa-brain"></i></div>
+                                <div class="badge-text">
+                                    <span>Specialization</span>
+                                    <strong>AI & Machine Learning</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- QUICK STATS BANNER -->
+                <div class="stats-banner glass-card reveal-on-scroll">
+                    <div class="stat-item">
+                        <span class="stat-num">CBIT</span>
+                        <span class="stat-label">B.E. CSE (AI & ML)</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-num">10+</span>
+                        <span class="stat-label">Core Technologies</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-num">100%</span>
+                        <span class="stat-label">Passionate Learner</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-num">2028</span>
+                        <span class="stat-label">Graduation Batch</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ABOUT & EXPERTISE SECTION -->
+        <section class="section" id="about">
+            <div class="container">
+                <div class="section-header reveal-on-scroll">
+                    <span class="section-tag"><i class="fa-solid fa-user"></i> About Me</span>
+                    <h2 class="section-title">Passionate About <span>AI, Code & Problem Solving</span></h2>
+                    <p class="section-desc">Get to know my academic background, technical proficiencies, and engineering journey.</p>
+                </div>
+
+                <div class="about-grid">
+                    <!-- Left Column: Profile Card -->
+                    <div class="about-profile-card glass-card reveal-on-scroll">
+                        <div class="profile-img-wrap">
+                            <img src="images/img.jpeg" alt="Sai Koushik Portrait" onerror="this.src='https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80'">
+                        </div>
+                        <div class="profile-quick-info">
+                            <h3>Sai Koushik</h3>
+                            <p><i class="fa-solid fa-code-branch"></i> AI & ML Undergrad @ CBIT Hyderabad</p>
+                            <p class="bio-text">
+                                I am an engineering student deeply immersed in the world of Machine Learning algorithms, 
+                                Data Structures, and Modern Web architectures. Constantly pushing boundaries through clean code and innovative problem solving.
+                            </p>
+                            <ul class="profile-meta-list">
+                                <li><i class="fa-solid fa-location-dot"></i> Hyderabad, India</li>
+                                <li><i class="fa-solid fa-envelope"></i> saikoushik.2108@gmail.com</li>
+                                <li><i class="fa-solid fa-phone"></i> +91 7331132108</li>
+                                <li><i class="fa-solid fa-graduation-cap"></i> Chaitanya Bharathi Institute of Tech</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Interactive Tabs -->
+                    <div class="about-tabs-wrap reveal-on-scroll">
+                        <div class="tab-nav">
+                            <button class="tab-btn active" data-tab="tab-skills">
+                                <i class="fa-solid fa-bolt"></i> Technical Skills
+                            </button>
+                            <button class="tab-btn" data-tab="tab-education">
+                                <i class="fa-solid fa-graduation-cap"></i> Education
+                            </button>
+                            <button class="tab-btn" data-tab="tab-experience">
+                                <i class="fa-solid fa-briefcase"></i> Experience
+                            </button>
+                        </div>
+
+                        <!-- Tab 1: Skills -->
+                        <div class="tab-pane active" id="tab-skills">
+                            <div class="skills-grid-container" id="skills-grid">
+                                <!-- Dynamically populated by JS & Supabase -->
+                            </div>
+                        </div>
+
+                        <!-- Tab 2: Education -->
+                        <div class="tab-pane" id="tab-education">
+                            <div class="timeline-container" id="education-timeline">
+                                <!-- Dynamically populated by JS & Supabase -->
+                            </div>
+                        </div>
+
+                        <!-- Tab 3: Experience -->
+                        <div class="tab-pane" id="tab-experience">
+                            <div class="timeline-container" id="experience-timeline">
+                                <!-- Dynamically populated by JS & Supabase -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PROJECTS SHOWCASE SECTION -->
+        <section class="section" id="projects">
+            <div class="container">
+                <div class="section-header reveal-on-scroll">
+                    <span class="section-tag"><i class="fa-solid fa-cubes"></i> Portfolio Showcase</span>
+                    <h2 class="section-title">Featured <span>Projects & Innovations</span></h2>
+                    <p class="section-desc">A selection of machine learning pipelines, algorithmic suites, and modern applications.</p>
+                </div>
+
+                <!-- Filter Controls -->
+                <div class="projects-filter-bar reveal-on-scroll">
+                    <button class="filter-btn active" data-filter="all">All Projects</button>
+                    <button class="filter-btn" data-filter="ai_ml">AI & Machine Learning</button>
+                    <button class="filter-btn" data-filter="algorithms">Algorithms & C++</button>
+                    <button class="filter-btn" data-filter="web">Full Stack Web</button>
+                </div>
+
+                <!-- Projects Grid -->
+                <div class="projects-grid" id="projects-grid">
+                    <!-- Dynamically populated by JS & Supabase -->
+                </div>
+            </div>
+        </section>
+
+        <!-- INTERACTIVE DEVELOPER CONSOLE / TERMINAL -->
+        <section class="terminal-section" id="terminal">
+            <div class="container">
+                <div class="section-header reveal-on-scroll">
+                    <span class="section-tag"><i class="fa-solid fa-terminal"></i> Interactive Shell</span>
+                    <h2 class="section-title">Developer <span>Console</span></h2>
+                    <p class="section-desc">Type commands to interact with my profile in real time.</p>
+                </div>
+
+                <div class="terminal-box reveal-on-scroll">
+                    <div class="terminal-header">
+                        <div class="terminal-dots">
+                            <span class="dot-red"></span>
+                            <span class="dot-yellow"></span>
+                            <span class="dot-green"></span>
+                        </div>
+                        <span class="terminal-title">koushik@cbit-shell: ~ (bash)</span>
+                        <span><i class="fa-solid fa-code text-muted"></i></span>
+                    </div>
+                    <div class="terminal-body" id="terminal-output">
+                        <div class="terminal-row">
+                            <span class="term-prompt">koushik@terminal:~$</span> <span>welcome --init</span>
+                        </div>
+                        <div class="terminal-row term-resp">
+                            Welcome to Sai Koushik's interactive console! Type <span class="term-hl">help</span> to view available commands or <span class="term-hl">about</span>, <span class="term-hl">skills</span>, <span class="term-hl">education</span>, <span class="term-hl">contact</span>.
+                        </div>
+                    </div>
+                    <div class="terminal-input-wrap">
+                        <span class="term-prompt" style="padding-left: 24px;">koushik@terminal:~$</span>
+                        <input type="text" id="terminal-input" class="terminal-input" placeholder="Type a command (e.g. 'help', 'skills', 'about')..." autocomplete="off" spellcheck="false">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CONTACT SECTION WITH DIRECT SUPABASE INSERT -->
+        <section class="section" id="contact">
+            <div class="container">
+                <div class="section-header reveal-on-scroll">
+                    <span class="section-tag"><i class="fa-solid fa-paper-plane"></i> Get In Touch</span>
+                    <h2 class="section-title">Let's Build <span>Something Amazing</span></h2>
+                    <p class="section-desc">Have a question, collaboration opportunity, or project in mind? Drop a message below!</p>
+                </div>
+
+                <div class="contact-grid">
+                    <!-- Left: Contact Details & Channels -->
+                    <div class="contact-info-panel glass-card reveal-on-scroll">
+                        <div class="contact-info-header">
+                            <h3>Contact Information</h3>
+                            <p>I'm always open to discussing new AI/ML projects, competitive programming challenges, or internship opportunities.</p>
+                        </div>
+
+                        <div class="contact-methods">
+                            <a href="mailto:saikoushik.2108@gmail.com" class="contact-card-item">
+                                <div class="contact-icon-box"><i class="fa-regular fa-envelope"></i></div>
+                                <div class="contact-item-text">
+                                    <span>Direct Email</span>
+                                    <strong>saikoushik.2108@gmail.com</strong>
+                                </div>
+                            </a>
+
+                            <a href="tel:+917331132108" class="contact-card-item">
+                                <div class="contact-icon-box"><i class="fa-solid fa-phone"></i></div>
+                                <div class="contact-item-text">
+                                    <span>Phone / WhatsApp</span>
+                                    <strong>+91 7331132108</strong>
+                                </div>
+                            </a>
+
+                            <div class="contact-card-item">
+                                <div class="contact-icon-box"><i class="fa-solid fa-location-dot"></i></div>
+                                <div class="contact-item-text">
+                                    <span>Location</span>
+                                    <strong>Hyderabad, Telangana, India</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="contact-social-group">
+                            <span class="hero-socials-label">Social Channels:</span>
+                            <div class="hero-socials" style="margin-top: 10px;">
+                                <a href="https://github.com/saikoushik2108" target="_blank" rel="noopener noreferrer" class="btn-icon" title="GitHub"><i class="fa-brands fa-github"></i></a>
+                                <a href="https://www.linkedin.com/in/palthi-sai-koushik-711778369" target="_blank" rel="noopener noreferrer" class="btn-icon" title="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+                                <a href="https://x.com/koushik_sa14436" target="_blank" rel="noopener noreferrer" class="btn-icon" title="X"><i class="fa-brands fa-x-twitter"></i></a>
+                                <a href="https://www.instagram.com/sai_koushik_2108" target="_blank" rel="noopener noreferrer" class="btn-icon" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Supabase-Connected Form -->
+                    <div class="contact-form-panel glass-card reveal-on-scroll">
+                        <form id="contact-form">
+                            <div class="form-group">
+                                <label for="form-name" class="form-label">Your Name *</label>
+                                <input type="text" id="form-name" name="name" class="form-input" placeholder="e.g. Alex Johnson" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="form-email" class="form-label">Email Address *</label>
+                                <input type="email" id="form-email" name="email" class="form-input" placeholder="alex@example.com" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="form-subject" class="form-label">Subject</label>
+                                <input type="text" id="form-subject" name="subject" class="form-input" placeholder="Project Inquiry / Collaboration">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="form-message" class="form-label">Your Message *</label>
+                                <textarea id="form-message" name="message" class="form-textarea" placeholder="Tell me about your project, idea, or questions..." required></textarea>
+                            </div>
+
+                            <button type="submit" id="contact-submit-btn" class="btn btn-primary" style="width: 100%;">
+                                <span>Send Message</span>
+                                <i class="fa-regular fa-paper-plane"></i>
+                            </button>
+
+                            <p class="form-status-note">
+                                <i class="fa-solid fa-lock"></i> Messages are saved directly to the database in real-time.
+                            </p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- PROJECT DETAILS MODAL -->
+    <div class="project-modal" id="project-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div class="modal-backdrop" id="modal-backdrop"></div>
+        <div class="modal-content-wrap glass-card">
+            <button class="modal-close-btn" id="modal-close" aria-label="Close Project Modal">&times;</button>
+            <span class="project-cat-label" id="modal-category">Category</span>
+            <h2 class="project-title" id="modal-title" style="font-size: 1.6rem; margin-top: 6px;">Project Title</h2>
+            <div class="modal-img-holder">
+                <img id="modal-img" src="" alt="Project Visual Preview">
+            </div>
+            <p id="modal-body" class="project-desc" style="font-size: 1rem; line-height: 1.7;"></p>
+            <div id="modal-tags" class="project-tech-stack" style="margin-top: 18px;"></div>
+            <div class="modal-actions">
+                <a id="modal-github" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm">
+                    <i class="fa-brands fa-github"></i> View GitHub Repository
+                </a>
+                <a id="modal-live" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> Live Demo
+                </a>
+            </div>
+        </div>
     </div>
-    <!----------------About-------------------->
-    <div id="about">
+
+    <!-- BACK TO TOP BUTTON WITH CIRCULAR SCROLL PROGRESS -->
+    <button class="back-to-top-btn" id="back-to-top" aria-label="Scroll back to top">
+        <svg class="progress-svg" width="48" height="48" viewBox="0 0 48 48">
+            <circle class="progress-circle-bg" cx="24" cy="24" r="18"></circle>
+            <circle class="progress-circle" id="scroll-progress-circle" cx="24" cy="24" r="18"></circle>
+        </svg>
+        <i class="fa-solid fa-arrow-up" style="position: relative; z-index: 2;"></i>
+    </button>
+
+    <!-- MODERN FOOTER -->
+    <footer class="footer">
         <div class="container">
-            <div class="row">
-                <div class="col1">
-                    <img src="images/img.jpeg" >
+            <div class="footer-content">
+                <div class="footer-brand">
+                    Sai<span>Koushik</span> &mdash; Portfolio
                 </div>
-                <div class="col2">
-                    <h1 class="subtitle">About Me</h1>
-                    <p> I am a <span><b>Computer Science and Engineering (Artificial Intelligence and Machine Learning)</b></span> undergraduated at <span><b>Chaitanya Bharathi Institute of Technology </b> </span>
-                    with a strong foundation in programming and data structures. <br>
-                    </p>
-                        <div class="tab-titles">
-                            <p class="tab-links active-link" onclick="opentab('skills')"><b>Skills</b></p>
-                            <p class="tab-links" onclick="opentab('Experience')"><b>Expereince</b></p>
-                            <p class="tab-links" onclick="opentab('Education')"><b>Education</b></p>
-                        </div>
-                        <div class="tab-contents active-tab" id="skills">
-                            <ul>
-                                <li><span>Coding</span><br>Learnt Java and C++</li>
-                                <li><span>Algorithm Designing</span><br>Learnt Data Structures and 
-                                    Algorithms</li>
-                                <li><span>Web Development</span><br>Web app Development</li>
-                            </ul>
-                        </div>
-                         <div class="tab-contents" id="Experience">
-                            <ul>
-                                <li><span>Current</span><br>No Experience</li>
-                                
-                            </ul>
-                        </div>
-                         <div class="tab-contents" id="Education">
-                            <ul>
-                                <li><span>2022</span><br>Completed SSC at Geetha High School</li>
-                                <li><span>2024</span><br>Completed intermediate at Narayana Junior College</li>
-                                <li><span>2028</span><br>Graduated from CBIT</li>
-                            </ul>
-                        </div>
+                <div class="footer-links">
+                    <a href="#home">Home</a>
+                    <a href="#about">About</a>
+                    <a href="#projects">Projects</a>
+                    <a href="#terminal">Console</a>
+                    <a href="#contact">Contact</a>
                 </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Sai Koushik. Engineered with <i class="fa-solid fa-heart"></i> using HTML5, CSS3 Glassmorphism & Supabase.</p>
             </div>
         </div>
-    </div>
-    <!-------Projects----------------------->
-    <div id="projects">
-        <div class="container">
-            <h1 class="sub-title">My Projects</h1>
-            <div class="work-list">
-                <div class="work">
-                    
-                </div>
-            </div>
-        </div>
-    </div>
-   <!------------------Contact-------------->
+    </footer>
 
-   <div id="contact">
-    <div class="container">
-        <div class="row">
-            <div class="contact-left">
-                <h1 class="sub-title">Contact Me</h1>
-                <p><i class="fa-regular fa-paper-plane"></i> saikoushik.2108@gmail.com</p>
-                <p> <i class="fa-solid fa-phone"></i> 7331132108</p>
-                <div class="social-icons">
-                    <a href="https://www.instagram.com/sai_koushik_2108?igsh=N2p1bzY3ajR6NGh1" target="_blank"><i class="fa-brands fa-instagram"></i></a>
-                    <a href="https://www.linkedin.com/in/palthi-sai-koushik-711778369?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank"><i class="fa-brands fa-linkedin"></i></a>
-                    <a href="https://x.com/koushik_sa14436" target="_blank"><i class="fa-brands fa-x-twitter"></i></a>
-                    <a href="https://github.com/saikoushik2108" target="_blank"><i class="fa-brands fa-github"></i></a>
-                </div>
-            </div>
-            <div class="contact-right">
-                <form >
-                    <input type="text" name="Name" placeholder="Your Name" required>
-                    <input type="email" name="email" placeholder="Your Email" required>
-                    <textarea name="Message" rows="5" placeholder="Your Message"></textarea>
-                    <button type="submit" class="btn btn2">Submit</button>
-                </form>
-                <span id="msg">  </span>
-            </div>
-        </div>
-    </div>
-    <div class="copyright">
-        <p>Copyright <i class="fa-solid fa-copyright"></i> saikoushik. Made with <i class="fa-solid fa-heart"></i>.</p>
-    </div>
-   </div>
-    <script>
-        var tablinks = document.getElementsByClassName("tab-links");
-        var tabcontents = document.getElementsByClassName("tab-contents");
-
-        function opentab(tabname){
-            for(tablink of tablinks){
-                tablink.classList.remove("active-link");
-            }
-             for(tabcontent of tabcontents){
-                tabcontent.classList.remove("active-tab");
-            }
-            event.currentTarget.classList.add("active-link");
-            document.getElementById(tabname).classList.add("active-tab");
-        }
-    </script>
-    <script>
-        var sidemenu = document.getElementById("sidemenu");
-
-        function openmenu(){
-            sidemenu.style.right = "0";
-
-        }
-        function closemenu(){
-            sidemenu.style.right = "-200px";
-        }
-    </script>
-    
-    
+    <!-- JAVASCRIPT MODULES -->
+    <script src="supabase-config.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
