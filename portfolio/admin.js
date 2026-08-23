@@ -404,16 +404,14 @@ function attachMessageActionListeners() {
 }
 
 /* -------------------------------------------------------------------------- */
-/* 4. PROJECTS CRUD (WITH BIDIRECTIONAL SYNC & PERSISTENT DELETION)           */
+/* 4. PROJECTS CRUD (DIRECT SUPABASE CLOUD SYNC & PERMANENT DELETIONS)         */
 /* -------------------------------------------------------------------------- */
 async function loadProjects() {
     const supabase = getSupabase();
     const container = document.getElementById('admin-projects-grid');
     if (!container) return;
 
-    let loaded = null;
     const isCustomized = localStorage.getItem('portfolio_projects_customized') === 'true';
-    const localData = localStorage.getItem('portfolio_custom_projects');
 
     if (supabase) {
         try {
@@ -423,27 +421,38 @@ async function loadProjects() {
                 .order('created_at', { ascending: false });
 
             if (!error && Array.isArray(data)) {
-                if (data.length > 0 || isCustomized) {
-                    loaded = data;
+                if (data.length === 0 && !isCustomized && window.PortfolioAPI && window.PortfolioAPI.FALLBACK_PROJECTS) {
+                    console.log('Seeding initial projects into Supabase Cloud DB...');
+                    for (const p of window.PortfolioAPI.FALLBACK_PROJECTS) {
+                        await supabase.from('projects').upsert(p);
+                    }
+                    const res = await supabase.from('projects').select('*').order('created_at', { ascending: false });
+                    allAdminProjects = res.data || window.PortfolioAPI.FALLBACK_PROJECTS;
+                } else {
+                    allAdminProjects = data;
                 }
+
+                localStorage.setItem('portfolio_custom_projects', JSON.stringify(allAdminProjects));
+                renderProjects(allAdminProjects);
+                updateOverviewCounters();
+                return;
             }
         } catch (err) {
             console.warn('Could not fetch projects from Supabase:', err.message);
         }
     }
 
-    if (!loaded && isCustomized && localData) {
+    const localData = localStorage.getItem('portfolio_custom_projects');
+    if (localData) {
         try {
-            loaded = JSON.parse(localData);
-        } catch (e) {}
+            allAdminProjects = JSON.parse(localData);
+        } catch (e) {
+            allAdminProjects = window.PortfolioAPI ? window.PortfolioAPI.FALLBACK_PROJECTS : [];
+        }
+    } else {
+        allAdminProjects = window.PortfolioAPI ? window.PortfolioAPI.FALLBACK_PROJECTS : [];
     }
 
-    // Default auto-fill if untouched
-    if (!loaded && !isCustomized && window.PortfolioAPI && window.PortfolioAPI.FALLBACK_PROJECTS) {
-        loaded = window.PortfolioAPI.FALLBACK_PROJECTS;
-    }
-
-    allAdminProjects = loaded || [];
     renderProjects(allAdminProjects);
 }
 
@@ -490,41 +499,39 @@ function attachProjectActionListeners() {
 
     document.querySelectorAll('.delete-proj-btn').forEach((btn) => {
         btn.addEventListener('click', async () => {
-            if (!confirm('Are you sure you want to delete this project?')) return;
+            if (!confirm('Are you sure you want to permanently delete this project?')) return;
             const id = btn.getAttribute('data-id');
             const supabase = getSupabase();
             try {
                 if (supabase) {
-                    await supabase.from('projects').delete().eq('id', id);
+                    const { error } = await supabase.from('projects').delete().eq('id', id);
+                    if (error) throw error;
                 }
                 allAdminProjects = allAdminProjects.filter((p) => p.id !== id);
 
-                // Persist sync state
                 localStorage.setItem('portfolio_projects_customized', 'true');
                 localStorage.setItem('portfolio_custom_projects', JSON.stringify(allAdminProjects));
                 window.dispatchEvent(new Event('storage'));
 
-                showToast('Project deleted successfully', 'info');
+                showToast('Project deleted permanently from Supabase!', 'success');
                 renderProjects(allAdminProjects);
                 updateOverviewCounters();
             } catch (err) {
-                showToast('Error deleting project: ' + err.message, 'error');
+                showToast('Error deleting project from cloud: ' + err.message, 'error');
             }
         });
     });
 }
 
 /* -------------------------------------------------------------------------- */
-/* 5. SKILLS CRUD (WITH BIDIRECTIONAL SYNC & PERSISTENT DELETION)             */
+/* 5. SKILLS CRUD (DIRECT SUPABASE CLOUD SYNC & PERMANENT DELETIONS)           */
 /* -------------------------------------------------------------------------- */
 async function loadSkills() {
     const supabase = getSupabase();
     const container = document.getElementById('admin-skills-container');
     if (!container) return;
 
-    let loaded = null;
     const isCustomized = localStorage.getItem('portfolio_skills_customized') === 'true';
-    const localData = localStorage.getItem('portfolio_custom_skills');
 
     if (supabase) {
         try {
@@ -534,26 +541,38 @@ async function loadSkills() {
                 .order('proficiency_percentage', { ascending: false });
 
             if (!error && Array.isArray(data)) {
-                if (data.length > 0 || isCustomized) {
-                    loaded = data;
+                if (data.length === 0 && !isCustomized && window.PortfolioAPI && window.PortfolioAPI.FALLBACK_SKILLS) {
+                    console.log('Seeding initial skills into Supabase Cloud DB...');
+                    for (const s of window.PortfolioAPI.FALLBACK_SKILLS) {
+                        await supabase.from('skills').upsert(s);
+                    }
+                    const res = await supabase.from('skills').select('*').order('proficiency_percentage', { ascending: false });
+                    allAdminSkills = res.data || window.PortfolioAPI.FALLBACK_SKILLS;
+                } else {
+                    allAdminSkills = data;
                 }
+
+                localStorage.setItem('portfolio_custom_skills', JSON.stringify(allAdminSkills));
+                renderSkills(allAdminSkills);
+                updateOverviewCounters();
+                return;
             }
         } catch (err) {
             console.warn('Could not fetch skills from Supabase:', err.message);
         }
     }
 
-    if (!loaded && isCustomized && localData) {
+    const localData = localStorage.getItem('portfolio_custom_skills');
+    if (localData) {
         try {
-            loaded = JSON.parse(localData);
-        } catch (e) {}
+            allAdminSkills = JSON.parse(localData);
+        } catch (e) {
+            allAdminSkills = window.PortfolioAPI ? window.PortfolioAPI.FALLBACK_SKILLS : [];
+        }
+    } else {
+        allAdminSkills = window.PortfolioAPI ? window.PortfolioAPI.FALLBACK_SKILLS : [];
     }
 
-    if (!loaded && !isCustomized && window.PortfolioAPI && window.PortfolioAPI.FALLBACK_SKILLS) {
-        loaded = window.PortfolioAPI.FALLBACK_SKILLS;
-    }
-
-    allAdminSkills = loaded || [];
     renderSkills(allAdminSkills);
 }
 
@@ -566,14 +585,14 @@ function renderSkills(skills) {
         return;
     }
 
-    container.innerHTML = skills.map((s, idx) => `
+    container.innerHTML = skills.map((s) => `
         <div class="admin-skill-card glass-card">
             <div class="skill-card-info">
                 <h4><i class="${s.icon_class || 'fa-solid fa-code'}" style="color:var(--primary); margin-right:6px;"></i> ${escapeHTML(s.skill_name)}</h4>
                 <span>${escapeHTML(s.category)} • <strong>${s.proficiency_percentage}%</strong></span>
             </div>
             <div class="skill-card-actions">
-                <button class="btn-danger-sm delete-skill-btn" data-id="${s.id || 'idx_' + idx}">
+                <button class="btn-danger-sm delete-skill-btn" data-id="${s.id}">
                     <i class="fa-solid fa-trash"></i>
                 </button>
             </div>
@@ -586,41 +605,39 @@ function renderSkills(skills) {
 function attachSkillActionListeners() {
     document.querySelectorAll('.delete-skill-btn').forEach((btn) => {
         btn.addEventListener('click', async () => {
-            if (!confirm('Are you sure you want to delete this skill?')) return;
+            if (!confirm('Are you sure you want to permanently delete this skill?')) return;
             const id = btn.getAttribute('data-id');
             const supabase = getSupabase();
             try {
-                if (supabase && !id.startsWith('idx_')) {
-                    await supabase.from('skills').delete().eq('id', id);
+                if (supabase) {
+                    const { error } = await supabase.from('skills').delete().eq('id', id);
+                    if (error) throw error;
                 }
-                allAdminSkills = allAdminSkills.filter((s, idx) => s.id !== id && 'idx_' + idx !== id);
+                allAdminSkills = allAdminSkills.filter((s) => s.id !== id);
 
-                // Persist sync state
                 localStorage.setItem('portfolio_skills_customized', 'true');
                 localStorage.setItem('portfolio_custom_skills', JSON.stringify(allAdminSkills));
                 window.dispatchEvent(new Event('storage'));
 
-                showToast('Skill deleted successfully', 'info');
+                showToast('Skill deleted permanently from Supabase!', 'success');
                 renderSkills(allAdminSkills);
                 updateOverviewCounters();
             } catch (err) {
-                showToast('Error deleting skill: ' + err.message, 'error');
+                showToast('Error deleting skill from cloud: ' + err.message, 'error');
             }
         });
     });
 }
 
 /* -------------------------------------------------------------------------- */
-/* 6. EXPERIENCE & EDUCATION CRUD (WITH BIDIRECTIONAL SYNC & PERSISTENT DELETION) */
+/* 6. EXPERIENCE & EDUCATION CRUD (DIRECT SUPABASE CLOUD SYNC & DELETIONS)    */
 /* -------------------------------------------------------------------------- */
 async function loadTimeline() {
     const supabase = getSupabase();
     const container = document.getElementById('admin-timeline-container');
     if (!container) return;
 
-    let loaded = null;
     const isCustomized = localStorage.getItem('portfolio_timeline_customized') === 'true';
-    const localData = localStorage.getItem('portfolio_custom_timeline');
 
     if (supabase) {
         try {
@@ -630,26 +647,38 @@ async function loadTimeline() {
                 .order('created_at', { ascending: false });
 
             if (!error && Array.isArray(data)) {
-                if (data.length > 0 || isCustomized) {
-                    loaded = data;
+                if (data.length === 0 && !isCustomized && window.PortfolioAPI && window.PortfolioAPI.FALLBACK_TIMELINE) {
+                    console.log('Seeding initial timeline milestones into Supabase Cloud DB...');
+                    for (const t of window.PortfolioAPI.FALLBACK_TIMELINE) {
+                        await supabase.from('timeline').upsert(t);
+                    }
+                    const res = await supabase.from('timeline').select('*').order('created_at', { ascending: false });
+                    allAdminTimeline = res.data || window.PortfolioAPI.FALLBACK_TIMELINE;
+                } else {
+                    allAdminTimeline = data;
                 }
+
+                localStorage.setItem('portfolio_custom_timeline', JSON.stringify(allAdminTimeline));
+                renderTimeline(allAdminTimeline);
+                updateOverviewCounters();
+                return;
             }
         } catch (err) {
             console.warn('Could not fetch timeline from Supabase:', err.message);
         }
     }
 
-    if (!loaded && isCustomized && localData) {
+    const localData = localStorage.getItem('portfolio_custom_timeline');
+    if (localData) {
         try {
-            loaded = JSON.parse(localData);
-        } catch (e) {}
+            allAdminTimeline = JSON.parse(localData);
+        } catch (e) {
+            allAdminTimeline = window.PortfolioAPI ? window.PortfolioAPI.FALLBACK_TIMELINE : [];
+        }
+    } else {
+        allAdminTimeline = window.PortfolioAPI ? window.PortfolioAPI.FALLBACK_TIMELINE : [];
     }
 
-    if (!loaded && !isCustomized && window.PortfolioAPI && window.PortfolioAPI.FALLBACK_TIMELINE) {
-        loaded = window.PortfolioAPI.FALLBACK_TIMELINE;
-    }
-
-    allAdminTimeline = loaded || [];
     renderTimeline(allAdminTimeline);
 }
 
@@ -662,12 +691,12 @@ function renderTimeline(items) {
         return;
     }
 
-    container.innerHTML = items.map((t, idx) => {
+    container.innerHTML = items.map((t) => {
         const itemType = t.type || 'experience';
         const highlights = Array.isArray(t.highlights) ? t.highlights : [];
 
         return `
-            <div class="admin-timeline-card glass-card type-${itemType}" data-id="${t.id || 'tl_' + idx}">
+            <div class="admin-timeline-card glass-card type-${itemType}" data-id="${t.id}">
                 <div class="admin-timeline-header">
                     <span class="timeline-type-badge">${itemType}</span>
                     <span class="timeline-period-badge"><i class="fa-regular fa-calendar"></i> ${escapeHTML(t.period)}</span>
@@ -681,10 +710,10 @@ function renderTimeline(items) {
                     </ul>
                 ` : ''}
                 <div class="admin-timeline-actions">
-                    <button class="btn btn-outline btn-sm edit-timeline-btn" data-id="${t.id || 'tl_' + idx}">
+                    <button class="btn btn-outline btn-sm edit-timeline-btn" data-id="${t.id}">
                         <i class="fa-solid fa-pen-to-square"></i> Edit
                     </button>
-                    <button class="btn-danger-sm delete-timeline-btn" data-id="${t.id || 'tl_' + idx}">
+                    <button class="btn-danger-sm delete-timeline-btn" data-id="${t.id}">
                         <i class="fa-solid fa-trash"></i> Delete
                     </button>
                 </div>
@@ -699,32 +728,32 @@ function attachTimelineActionListeners() {
     document.querySelectorAll('.edit-timeline-btn').forEach((btn) => {
         btn.addEventListener('click', () => {
             const id = btn.getAttribute('data-id');
-            const item = allAdminTimeline.find((t, idx) => t.id === id || 'tl_' + idx === id);
+            const item = allAdminTimeline.find((t) => t.id === id);
             if (item) openTimelineModalForEdit(item, id);
         });
     });
 
     document.querySelectorAll('.delete-timeline-btn').forEach((btn) => {
         btn.addEventListener('click', async () => {
-            if (!confirm('Are you sure you want to delete this timeline milestone?')) return;
+            if (!confirm('Are you sure you want to permanently delete this timeline milestone?')) return;
             const id = btn.getAttribute('data-id');
             const supabase = getSupabase();
             try {
-                if (supabase && !id.startsWith('tl_')) {
-                    await supabase.from('timeline').delete().eq('id', id);
+                if (supabase) {
+                    const { error } = await supabase.from('timeline').delete().eq('id', id);
+                    if (error) throw error;
                 }
-                allAdminTimeline = allAdminTimeline.filter((t, idx) => t.id !== id && 'tl_' + idx !== id);
+                allAdminTimeline = allAdminTimeline.filter((t) => t.id !== id);
 
-                // Persist sync state
                 localStorage.setItem('portfolio_timeline_customized', 'true');
                 localStorage.setItem('portfolio_custom_timeline', JSON.stringify(allAdminTimeline));
                 window.dispatchEvent(new Event('storage'));
 
-                showToast('Milestone deleted', 'info');
+                showToast('Milestone deleted permanently from Supabase!', 'success');
                 renderTimeline(allAdminTimeline);
                 updateOverviewCounters();
             } catch (err) {
-                showToast('Error deleting milestone: ' + err.message, 'error');
+                showToast('Error deleting milestone from cloud: ' + err.message, 'error');
             }
         });
     });
@@ -754,21 +783,13 @@ function initSyncCloudButton() {
             }
 
             // Upload current admin skills
-            for (let i = 0; i < allAdminSkills.length; i++) {
-                const s = allAdminSkills[i];
-                await supabase.from('skills').upsert({
-                    id: s.id && !s.id.startsWith('idx_') ? s.id : 'skill_' + (i + 1),
-                    ...s
-                });
+            for (const s of allAdminSkills) {
+                await supabase.from('skills').upsert(s);
             }
 
             // Upload current admin timeline
-            for (let i = 0; i < allAdminTimeline.length; i++) {
-                const t = allAdminTimeline[i];
-                await supabase.from('timeline').upsert({
-                    id: t.id && !t.id.startsWith('tl_') ? t.id : 'tl_' + (i + 1),
-                    ...t
-                });
+            for (const t of allAdminTimeline) {
+                await supabase.from('timeline').upsert(t);
             }
 
             showToast('🎉 All changes synced directly to your live Supabase cloud database!', 'success');
@@ -872,7 +893,8 @@ function initModals() {
             const supabase = getSupabase();
             try {
                 if (supabase) {
-                    await supabase.from('projects').upsert(projectObj);
+                    const { error } = await supabase.from('projects').upsert(projectObj);
+                    if (error) throw error;
                 }
                 const existingIdx = allAdminProjects.findIndex((p) => p.id === id);
                 if (existingIdx >= 0) {
@@ -881,17 +903,16 @@ function initModals() {
                     allAdminProjects.unshift(projectObj);
                 }
 
-                // Persist sync state
                 localStorage.setItem('portfolio_projects_customized', 'true');
                 localStorage.setItem('portfolio_custom_projects', JSON.stringify(allAdminProjects));
                 window.dispatchEvent(new Event('storage'));
 
-                showToast('Project saved successfully!', 'success');
+                showToast('Project saved permanently to Supabase!', 'success');
                 projectModal.classList.remove('open');
                 renderProjects(allAdminProjects);
                 updateOverviewCounters();
             } catch (err) {
-                showToast('Notice: ' + err.message, 'info');
+                showToast('Error saving project to cloud: ' + err.message, 'error');
                 renderProjects(allAdminProjects);
             } finally {
                 saveBtn.disabled = false;
@@ -926,7 +947,8 @@ function initModals() {
             const supabase = getSupabase();
             try {
                 if (supabase) {
-                    await supabase.from('skills').upsert(skillObj);
+                    const { error } = await supabase.from('skills').upsert(skillObj);
+                    if (error) throw error;
                 }
                 const existingIdx = allAdminSkills.findIndex((s) => s.id === id);
                 if (existingIdx >= 0) {
@@ -935,17 +957,16 @@ function initModals() {
                     allAdminSkills.unshift(skillObj);
                 }
 
-                // Persist sync state
                 localStorage.setItem('portfolio_skills_customized', 'true');
                 localStorage.setItem('portfolio_custom_skills', JSON.stringify(allAdminSkills));
                 window.dispatchEvent(new Event('storage'));
 
-                showToast('Skill saved successfully!', 'success');
+                showToast('Skill saved permanently to Supabase!', 'success');
                 skillModal.classList.remove('open');
                 renderSkills(allAdminSkills);
                 updateOverviewCounters();
             } catch (err) {
-                showToast('Notice: ' + err.message, 'info');
+                showToast('Error saving skill to cloud: ' + err.message, 'error');
             } finally {
                 saveBtn.disabled = false;
                 saveBtn.textContent = 'Save Skill';
@@ -985,7 +1006,8 @@ function initModals() {
             const supabase = getSupabase();
             try {
                 if (supabase) {
-                    await supabase.from('timeline').upsert(timelineObj);
+                    const { error } = await supabase.from('timeline').upsert(timelineObj);
+                    if (error) throw error;
                 }
                 const existingIdx = allAdminTimeline.findIndex((t) => t.id === id);
                 if (existingIdx >= 0) {
@@ -994,17 +1016,16 @@ function initModals() {
                     allAdminTimeline.unshift(timelineObj);
                 }
 
-                // Persist sync state
                 localStorage.setItem('portfolio_timeline_customized', 'true');
                 localStorage.setItem('portfolio_custom_timeline', JSON.stringify(allAdminTimeline));
                 window.dispatchEvent(new Event('storage'));
 
-                showToast('Milestone saved successfully!', 'success');
+                showToast('Milestone saved permanently to Supabase!', 'success');
                 timelineModal.classList.remove('open');
                 renderTimeline(allAdminTimeline);
                 updateOverviewCounters();
             } catch (err) {
-                showToast('Notice: ' + err.message, 'info');
+                showToast('Error saving milestone to cloud: ' + err.message, 'error');
                 renderTimeline(allAdminTimeline);
             } finally {
                 saveBtn.disabled = false;

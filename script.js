@@ -497,6 +497,11 @@ function renderSkills(skills) {
     const skillsGrid = document.getElementById('skills-grid');
     if (!skillsGrid) return;
 
+    if (!skills || skills.length === 0) {
+        skillsGrid.innerHTML = '<p class="empty-msg" style="grid-column: 1/-1; text-align:center; padding: 40px; color: var(--text-muted);">No skills listed at this moment.</p>';
+        return;
+    }
+
     const categories = {};
     skills.forEach((s) => {
         if (!categories[s.category]) categories[s.category] = [];
@@ -540,8 +545,8 @@ function renderTimeline(timelineItems) {
     const educationContainer = document.getElementById('education-timeline');
     const experienceContainer = document.getElementById('experience-timeline');
 
-    const educationItems = timelineItems.filter((item) => item.type === 'education');
-    const experienceItems = timelineItems.filter((item) => item.type === 'experience');
+    const educationItems = (timelineItems || []).filter((item) => item.type === 'education');
+    const experienceItems = (timelineItems || []).filter((item) => item.type === 'experience');
 
     if (educationContainer) {
         educationContainer.innerHTML = renderTimelineBlock(educationItems, 'fa-graduation-cap');
@@ -589,9 +594,14 @@ function renderTimelineBlock(items, iconClass) {
 let allProjectsData = [];
 
 function renderProjects(projects) {
-    allProjectsData = projects;
+    allProjectsData = projects || [];
     const container = document.getElementById('projects-grid');
     if (!container) return;
+
+    if (!projects || projects.length === 0) {
+        container.innerHTML = '<p class="empty-msg" style="grid-column: 1/-1; text-align:center; padding: 40px; color: var(--text-muted);">No projects available at this moment.</p>';
+        return;
+    }
 
     container.innerHTML = projects.map((p) => createProjectCardHTML(p)).join('');
     initCardTilt();

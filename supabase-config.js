@@ -39,7 +39,7 @@ try {
         console.log('⚡ Supabase Client initialized successfully.');
     } else {
         console.info(
-            'ℹ️ Supabase credentials not set or placeholder detected. Operating in high-speed local fallback mode. See supabase_schema.sql & README.md to connect your live Supabase DB.'
+            'ℹ️ Supabase credentials not set or placeholder detected. Operating in high-speed local fallback mode.'
         );
     }
 } catch (err) {
@@ -47,7 +47,7 @@ try {
 }
 
 /* -------------------------------------------------------------------------- */
-/* LOCAL FALLBACK DATA (Rendered seamlessly if Supabase DB is offline or unset) */
+/* INITIAL DEFAULT DATA (Seeded automatically into Supabase on first run)      */
 /* -------------------------------------------------------------------------- */
 
 const FALLBACK_PROJECTS = [
@@ -102,29 +102,30 @@ const FALLBACK_PROJECTS = [
 ];
 
 const FALLBACK_SKILLS = [
-    { category: 'AI & ML', skill_name: 'Machine Learning Algorithms', proficiency_percentage: 88, icon_class: 'fa-solid fa-brain' },
-    { category: 'AI & ML', skill_name: 'Deep Learning & Neural Nets', proficiency_percentage: 82, icon_class: 'fa-solid fa-network-wired' },
-    { category: 'AI & ML', skill_name: 'Computer Vision & OpenCV', proficiency_percentage: 80, icon_class: 'fa-solid fa-eye' },
-    { category: 'AI & ML', skill_name: 'Data Science (Pandas, NumPy)', proficiency_percentage: 86, icon_class: 'fa-solid fa-chart-line' },
+    { id: 's1', category: 'AI & ML', skill_name: 'Machine Learning Algorithms', proficiency_percentage: 88, icon_class: 'fa-solid fa-brain' },
+    { id: 's2', category: 'AI & ML', skill_name: 'Deep Learning & Neural Nets', proficiency_percentage: 82, icon_class: 'fa-solid fa-network-wired' },
+    { id: 's3', category: 'AI & ML', skill_name: 'Computer Vision & OpenCV', proficiency_percentage: 80, icon_class: 'fa-solid fa-eye' },
+    { id: 's4', category: 'AI & ML', skill_name: 'Data Science (Pandas, NumPy)', proficiency_percentage: 86, icon_class: 'fa-solid fa-chart-line' },
 
-    { category: 'Languages', skill_name: 'Java', proficiency_percentage: 90, icon_class: 'fa-brands fa-java' },
-    { category: 'Languages', skill_name: 'C++', proficiency_percentage: 88, icon_class: 'fa-solid fa-code' },
-    { category: 'Languages', skill_name: 'Python', proficiency_percentage: 85, icon_class: 'fa-brands fa-python' },
-    { category: 'Languages', skill_name: 'JavaScript (ES6+)', proficiency_percentage: 82, icon_class: 'fa-brands fa-js' },
+    { id: 's5', category: 'Languages', skill_name: 'Java', proficiency_percentage: 90, icon_class: 'fa-brands fa-java' },
+    { id: 's6', category: 'Languages', skill_name: 'C++', proficiency_percentage: 88, icon_class: 'fa-solid fa-code' },
+    { id: 's7', category: 'Languages', skill_name: 'Python', proficiency_percentage: 85, icon_class: 'fa-brands fa-python' },
+    { id: 's8', category: 'Languages', skill_name: 'JavaScript (ES6+)', proficiency_percentage: 82, icon_class: 'fa-brands fa-js' },
 
-    { category: 'Core CS', skill_name: 'Data Structures & Algorithms', proficiency_percentage: 92, icon_class: 'fa-solid fa-sitemap' },
-    { category: 'Core CS', skill_name: 'Object-Oriented Programming (OOP)', proficiency_percentage: 90, icon_class: 'fa-solid fa-cubes' },
-    { category: 'Core CS', skill_name: 'Database Systems & SQL', proficiency_percentage: 84, icon_class: 'fa-solid fa-database' },
-    { category: 'Core CS', skill_name: 'Problem Solving & Optimization', proficiency_percentage: 89, icon_class: 'fa-solid fa-gears' },
+    { id: 's9', category: 'Core CS', skill_name: 'Data Structures & Algorithms', proficiency_percentage: 92, icon_class: 'fa-solid fa-sitemap' },
+    { id: 's10', category: 'Core CS', skill_name: 'Object-Oriented Programming (OOP)', proficiency_percentage: 90, icon_class: 'fa-solid fa-cubes' },
+    { id: 's11', category: 'Core CS', skill_name: 'Database Systems & SQL', proficiency_percentage: 84, icon_class: 'fa-solid fa-database' },
+    { id: 's12', category: 'Core CS', skill_name: 'Problem Solving & Optimization', proficiency_percentage: 89, icon_class: 'fa-solid fa-gears' },
 
-    { category: 'Web Development', skill_name: 'Modern Responsive HTML5 & CSS3', proficiency_percentage: 92, icon_class: 'fa-brands fa-html5' },
-    { category: 'Web Development', skill_name: 'Supabase BaaS & Cloud DB', proficiency_percentage: 86, icon_class: 'fa-solid fa-bolt' },
-    { category: 'Web Development', skill_name: 'Asynchronous APIs & JSON', proficiency_percentage: 85, icon_class: 'fa-solid fa-plug' },
-    { category: 'Web Development', skill_name: 'Git & GitHub Version Control', proficiency_percentage: 88, icon_class: 'fa-brands fa-github' }
+    { id: 's13', category: 'Web Development', skill_name: 'Modern Responsive HTML5 & CSS3', proficiency_percentage: 92, icon_class: 'fa-brands fa-html5' },
+    { id: 's14', category: 'Web Development', skill_name: 'Supabase BaaS & Cloud DB', proficiency_percentage: 86, icon_class: 'fa-solid fa-bolt' },
+    { id: 's15', category: 'Web Development', skill_name: 'Asynchronous APIs & JSON', proficiency_percentage: 85, icon_class: 'fa-solid fa-plug' },
+    { id: 's16', category: 'Web Development', skill_name: 'Git & GitHub Version Control', proficiency_percentage: 88, icon_class: 'fa-brands fa-github' }
 ];
 
 const FALLBACK_TIMELINE = [
     {
+        id: 'tl1',
         type: 'education',
         title: 'B.E. Computer Science & Engineering (AI & ML)',
         institution: 'Chaitanya Bharathi Institute of Technology (CBIT), Hyderabad',
@@ -136,6 +137,7 @@ const FALLBACK_TIMELINE = [
         ]
     },
     {
+        id: 'tl2',
         type: 'education',
         title: 'Intermediate (MPC - Mathematics, Physics, Chemistry)',
         institution: 'Narayana Junior College',
@@ -147,6 +149,7 @@ const FALLBACK_TIMELINE = [
         ]
     },
     {
+        id: 'tl3',
         type: 'education',
         title: 'Secondary School Certificate (SSC)',
         institution: 'Geetha High School',
@@ -158,6 +161,7 @@ const FALLBACK_TIMELINE = [
         ]
     },
     {
+        id: 'tl4',
         type: 'experience',
         title: 'AI & Software Developer (Independent)',
         institution: 'Projects & Competitive Programming',
@@ -196,7 +200,6 @@ async function submitContactMessage(messageData) {
             return { success: true, mode: 'supabase', data };
         } catch (err) {
             console.error('Supabase insert error:', err);
-            // Graceful fallback: store locally
             storeMessageLocally(messageData);
             return {
                 success: true,
@@ -205,7 +208,6 @@ async function submitContactMessage(messageData) {
             };
         }
     } else {
-        // Local storage demo fallback
         storeMessageLocally(messageData);
         return {
             success: true,
@@ -220,19 +222,16 @@ function storeMessageLocally(msg) {
         const stored = JSON.parse(localStorage.getItem('portfolio_messages') || '[]');
         stored.push({ ...msg, timestamp: new Date().toISOString() });
         localStorage.setItem('portfolio_messages', JSON.stringify(stored));
-        console.log('Saved message to localStorage:', msg);
     } catch (e) {
         console.warn('LocalStorage error:', e);
     }
 }
 
 /**
- * Fetches project list with real-time sync between Admin CMS & Supabase
+ * Fetches project list directly from Supabase Cloud DB
+ * (Supabase is the single source of truth across all devices)
  */
 async function fetchProjectsData() {
-    const localCustomized = localStorage.getItem('portfolio_projects_customized');
-    const localData = localStorage.getItem('portfolio_custom_projects');
-
     if (supabaseClient) {
         try {
             const { data, error } = await supabaseClient
@@ -241,19 +240,18 @@ async function fetchProjectsData() {
                 .order('created_at', { ascending: false });
 
             if (!error && Array.isArray(data)) {
-                if (data.length > 0) {
-                    return data;
-                }
-                if (localCustomized === 'true' && localData) {
-                    return JSON.parse(localData);
-                }
+                return data;
+            }
+            if (error) {
+                console.warn('Supabase projects fetch error:', error.message);
             }
         } catch (err) {
             console.warn('Could not fetch projects from Supabase:', err);
         }
     }
 
-    if (localCustomized === 'true' && localData) {
+    const localData = localStorage.getItem('portfolio_custom_projects');
+    if (localData) {
         try {
             return JSON.parse(localData);
         } catch (e) {}
@@ -263,12 +261,10 @@ async function fetchProjectsData() {
 }
 
 /**
- * Fetches skills data with real-time sync between Admin CMS & Supabase
+ * Fetches skills data directly from Supabase Cloud DB
+ * (Supabase is the single source of truth across all devices)
  */
 async function fetchSkillsData() {
-    const localCustomized = localStorage.getItem('portfolio_skills_customized');
-    const localData = localStorage.getItem('portfolio_custom_skills');
-
     if (supabaseClient) {
         try {
             const { data, error } = await supabaseClient
@@ -277,19 +273,18 @@ async function fetchSkillsData() {
                 .order('proficiency_percentage', { ascending: false });
 
             if (!error && Array.isArray(data)) {
-                if (data.length > 0) {
-                    return data;
-                }
-                if (localCustomized === 'true' && localData) {
-                    return JSON.parse(localData);
-                }
+                return data;
+            }
+            if (error) {
+                console.warn('Supabase skills fetch error:', error.message);
             }
         } catch (err) {
             console.warn('Could not fetch skills from Supabase:', err);
         }
     }
 
-    if (localCustomized === 'true' && localData) {
+    const localData = localStorage.getItem('portfolio_custom_skills');
+    if (localData) {
         try {
             return JSON.parse(localData);
         } catch (e) {}
@@ -299,12 +294,10 @@ async function fetchSkillsData() {
 }
 
 /**
- * Fetches timeline data with real-time sync between Admin CMS & Supabase
+ * Fetches timeline data directly from Supabase Cloud DB
+ * (Supabase is the single source of truth across all devices)
  */
 async function fetchTimelineData() {
-    const localCustomized = localStorage.getItem('portfolio_timeline_customized');
-    const localData = localStorage.getItem('portfolio_custom_timeline');
-
     if (supabaseClient) {
         try {
             const { data, error } = await supabaseClient
@@ -313,19 +306,18 @@ async function fetchTimelineData() {
                 .order('created_at', { ascending: false });
 
             if (!error && Array.isArray(data)) {
-                if (data.length > 0) {
-                    return data;
-                }
-                if (localCustomized === 'true' && localData) {
-                    return JSON.parse(localData);
-                }
+                return data;
+            }
+            if (error) {
+                console.warn('Supabase timeline fetch error:', error.message);
             }
         } catch (err) {
             console.warn('Could not fetch timeline from Supabase:', err);
         }
     }
 
-    if (localCustomized === 'true' && localData) {
+    const localData = localStorage.getItem('portfolio_custom_timeline');
+    if (localData) {
         try {
             return JSON.parse(localData);
         } catch (e) {}
