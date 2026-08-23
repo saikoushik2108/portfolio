@@ -474,6 +474,13 @@ async function initDynamicData() {
     }
 }
 
+// Live real-time sync when Admin CMS updates or deletes projects/skills
+window.addEventListener('storage', (e) => {
+    if (!e.key || e.key.startsWith('portfolio_')) {
+        initDynamicData();
+    }
+});
+
 function updateDbBadge() {
     const badge = document.getElementById('db-status-badge');
     if (!badge) return;
@@ -744,6 +751,9 @@ function initDeveloperTerminal() {
         education: '• B.E. CSE (AI & ML) @ CBIT Hyderabad (2024 - 2028)\n• Intermediate (MPC) @ Narayana Junior College (2022 - 2024)\n• SSC @ Geetha High School (2021 - 2022)',
         contact: 'Email: saikoushik.2108@gmail.com\nPhone: +91 7331132108\nLocation: Hyderabad, India\nGitHub: https://github.com/saikoushik2108',
         github: 'Redirecting to GitHub: https://github.com/saikoushik2108',
+        admin: '🔒 Redirecting to Private Admin Portal (admin.html)...',
+        dashboard: '🔒 Redirecting to Private Admin Portal (admin.html)...',
+        login: '🔒 Redirecting to Private Admin Portal (admin.html)...',
         whoami: 'visitor@koushik-portfolio ~'
     };
 
@@ -771,6 +781,10 @@ function initDeveloperTerminal() {
                 response.innerHTML = commands[cmd].replace(/\n/g, '<br>');
                 if (cmd === 'github') {
                     window.open('https://github.com/saikoushik2108', '_blank');
+                } else if (cmd === 'admin' || cmd === 'dashboard' || cmd === 'login') {
+                    setTimeout(() => {
+                        window.location.href = 'admin.html';
+                    }, 600);
                 }
             } else {
                 response.innerHTML = `Command not found: "${escapeHTML(cmd)}". Type <span class="term-hl">help</span> for a list of commands.`;
@@ -780,6 +794,32 @@ function initDeveloperTerminal() {
             output.scrollTop = output.scrollHeight;
         }
     });
+
+    // Secret Admin Shortcut: Ctrl+Shift+A or Cmd+Shift+A
+    document.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
+            e.preventDefault();
+            window.location.href = 'admin.html';
+        }
+    });
+
+    // Secret Admin Triple Click on Footer Brand
+    let clickCount = 0;
+    let clickTimer = null;
+    const footerBrand = document.querySelector('.footer-brand');
+    if (footerBrand) {
+        footerBrand.style.cursor = 'pointer';
+        footerBrand.addEventListener('click', () => {
+            clickCount++;
+            clearTimeout(clickTimer);
+            if (clickCount >= 3) {
+                clickCount = 0;
+                window.location.href = 'admin.html';
+            } else {
+                clickTimer = setTimeout(() => { clickCount = 0; }, 700);
+            }
+        });
+    }
 }
 
 function escapeHTML(str) {

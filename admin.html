@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Sai Koushik Portfolio</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Admin Stylesheet -->
+    <link rel="stylesheet" href="admin.css">
+
+    <!-- Supabase JS SDK (Serverless Database & Auth Engine) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+    <!-- AMBIENT BACKGROUND GLOW -->
+    <div class="bg-grid-pattern"></div>
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- ====================================================================== -->
+    <!-- 1. LOGIN SCREEN (Visible ONLY if NOT Authenticated)                   -->
+    <!-- ====================================================================== -->
+    <div id="login-screen" class="login-container">
+        <div class="login-card glass-card tilt-element">
+            <div class="login-card-glow"></div>
+            
+            <div class="login-header">
+                <div class="admin-badge-icon pulse-glow">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <div class="badge-ring"></div>
+                </div>
+                <h2>Admin <span>Portal</span></h2>
+                <p>Sign in with your private admin credentials to manage your portfolio.</p>
+            </div>
+
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="login-email" class="form-label">Admin Email</label>
+                    <div class="input-icon-wrap">
+                        <i class="fa-regular fa-envelope input-icon"></i>
+                        <input type="email" id="login-email" class="form-input" placeholder="Enter your email" required autocomplete="email">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="login-password" class="form-label">Password</label>
+                    <div class="input-icon-wrap">
+                        <i class="fa-solid fa-lock input-icon"></i>
+                        <input type="password" id="login-password" class="form-input password-input" placeholder="Enter your password" required autocomplete="current-password">
+                        <button type="button" id="toggle-password-btn" class="toggle-password-btn" aria-label="Toggle password visibility" title="Show/Hide Password">
+                            <i class="fa-regular fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" id="login-btn" class="btn btn-primary btn-animated-glow" style="width: 100%;">
+                    <i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In to Dashboard
+                </button>
+
+                <div class="login-footer">
+                    <a href="index.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> Back to Public Portfolio</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ====================================================================== -->
+    <!-- 2. AUTHENTICATED ADMIN DASHBOARD (Hidden until Logged In)              -->
+    <!-- ====================================================================== -->
+    <div id="admin-dashboard" class="dashboard-layout" style="display: none;">
+        
+        <!-- SIDEBAR NAVIGATION -->
+        <aside class="admin-sidebar glass-card">
+            <div class="sidebar-brand">
+                <div class="brand-badge">SK</div>
+                <div class="brand-text">
+                    <strong>Sai Koushik</strong>
+                    <span>Portfolio CMS</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <button class="nav-item active" data-tab="tab-overview">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Overview</span>
+                </button>
+                <button class="nav-item" data-tab="tab-messages">
+                    <i class="fa-solid fa-inbox"></i>
+                    <span>Messages</span>
+                    <span id="unread-pill" class="badge-pill" style="display: none;">0</span>
+                </button>
+                <button class="nav-item" data-tab="tab-projects">
+                    <i class="fa-solid fa-diagram-project"></i>
+                    <span>Projects</span>
+                </button>
+                <button class="nav-item" data-tab="tab-skills">
+                    <i class="fa-solid fa-code"></i>
+                    <span>Skills & Profile</span>
+                </button>
+                <button class="nav-item" data-tab="tab-experience">
+                    <i class="fa-solid fa-briefcase"></i>
+                    <span>Experience & Timeline</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button id="sync-cloud-btn" class="btn btn-outline btn-sm" style="width: 100%; justify-content: flex-start; gap: 8px; font-size: 0.8rem; margin-bottom: 6px;">
+                    <i class="fa-solid fa-cloud-arrow-up" style="color: var(--primary);"></i> Sync All to Supabase
+                </button>
+                <a href="index.html" target="_blank" class="btn-sidebar-link">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> View Live Site
+                </a>
+                <button id="logout-btn" class="btn-logout">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN DASHBOARD CONTENT -->
+        <main class="admin-main">
+            
+            <!-- TOP BAR -->
+            <header class="admin-topbar glass-card">
+                <div class="topbar-left">
+                    <button class="mobile-sidebar-toggle" id="sidebar-toggle">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <h1 id="page-title">Dashboard Overview</h1>
+                </div>
+
+                <div class="topbar-right">
+                    <div class="admin-user-pill">
+                        <div class="user-avatar"><i class="fa-solid fa-user-tie"></i></div>
+                        <span id="admin-user-email">saikoushik.2108@gmail.com</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- TAB 1: OVERVIEW -->
+            <section id="tab-overview" class="admin-tab-pane active">
+                <div class="stats-cards-grid">
+                    <div class="stat-card glass-card">
+                        <div class="stat-icon icon-blue"><i class="fa-solid fa-envelope"></i></div>
+                        <div class="stat-data">
+                            <span class="stat-label">Total Messages</span>
+                            <h3 id="stat-total-messages">0</h3>
+                        </div>
+                    </div>
+                    <div class="stat-card glass-card">
+                        <div class="stat-icon icon-pink"><i class="fa-solid fa-bell"></i></div>
+                        <div class="stat-data">
+                            <span class="stat-label">Unread Inquiries</span>
+                            <h3 id="stat-unread-messages">0</h3>
+                        </div>
+                    </div>
+                    <div class="stat-card glass-card">
+                        <div class="stat-icon icon-indigo"><i class="fa-solid fa-diagram-project"></i></div>
+                        <div class="stat-data">
+                            <span class="stat-label">Live Projects</span>
+                            <h3 id="stat-total-projects">0</h3>
+                        </div>
+                    </div>
+                    <div class="stat-card glass-card">
+                        <div class="stat-icon icon-green"><i class="fa-solid fa-layer-group"></i></div>
+                        <div class="stat-data">
+                            <span class="stat-label">Skills Listed</span>
+                            <h3 id="stat-total-skills">0</h3>
+                        </div>
+                    </div>
+                    <div class="stat-card glass-card">
+                        <div class="stat-icon icon-amber"><i class="fa-solid fa-briefcase"></i></div>
+                        <div class="stat-data">
+                            <span class="stat-label">Milestones / Timeline</span>
+                            <h3 id="stat-total-timeline">0</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="overview-sections-grid">
+                    <!-- Recent Messages Box -->
+                    <div class="overview-box glass-card">
+                        <div class="box-header">
+                            <h3><i class="fa-solid fa-inbox"></i> Recent Inquiries</h3>
+                            <button class="btn-text-action switch-tab-btn" data-tab="tab-messages">View All</button>
+                        </div>
+                        <div id="overview-recent-messages" class="mini-list">
+                            <p class="empty-state">No messages received yet.</p>
+                        </div>
+                    </div>
+
+                    <!-- Quick Project Management Box -->
+                    <div class="overview-box glass-card">
+                        <div class="box-header">
+                            <h3><i class="fa-solid fa-wand-magic-sparkles"></i> Quick Actions</h3>
+                            <button class="btn-text-action" id="overview-add-proj-btn">+ New Project</button>
+                        </div>
+                        <div class="quick-actions-list">
+                            <button class="action-tile" id="tile-add-project">
+                                <i class="fa-solid fa-folder-plus"></i>
+                                <span>Add New Project</span>
+                            </button>
+                            <button class="action-tile" id="tile-add-skill">
+                                <i class="fa-solid fa-bolt"></i>
+                                <span>Add Technical Skill</span>
+                            </button>
+                            <button class="action-tile" id="tile-add-timeline">
+                                <i class="fa-solid fa-briefcase"></i>
+                                <span>Add Experience / Edu</span>
+                            </button>
+                            <a href="https://supabase.com/dashboard/project/upltiupezppaqiilskiw" target="_blank" class="action-tile">
+                                <i class="fa-solid fa-database"></i>
+                                <span>Supabase Console</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: MESSAGES INBOX -->
+            <section id="tab-messages" class="admin-tab-pane">
+                <div class="section-toolbar glass-card">
+                    <div class="toolbar-search">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="messages-search" placeholder="Search by name, email, or message...">
+                    </div>
+                    <div class="toolbar-actions">
+                        <button class="btn btn-outline btn-sm" id="refresh-messages-btn">
+                            <i class="fa-solid fa-rotate"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+
+                <div id="messages-list-container" class="messages-list-grid">
+                    <p class="empty-state">Loading messages from Supabase...</p>
+                </div>
+            </section>
+
+            <!-- TAB 3: PROJECTS MANAGER -->
+            <section id="tab-projects" class="admin-tab-pane">
+                <div class="section-toolbar glass-card">
+                    <div class="toolbar-title">
+                        <h2>Portfolio Projects</h2>
+                        <p>Add, edit, or remove projects shown on your live portfolio.</p>
+                    </div>
+                    <button class="btn btn-primary btn-sm" id="open-add-project-modal">
+                        <i class="fa-solid fa-plus"></i> Add Project
+                    </button>
+                </div>
+
+                <div id="admin-projects-grid" class="admin-projects-grid">
+                    <p class="empty-state">Loading projects...</p>
+                </div>
+            </section>
+
+            <!-- TAB 4: SKILLS & PROFILE -->
+            <section id="tab-skills" class="admin-tab-pane">
+                <div class="section-toolbar glass-card">
+                    <div class="toolbar-title">
+                        <h2>Technical Skills</h2>
+                        <p>Manage your core technologies and proficiency levels.</p>
+                    </div>
+                    <button class="btn btn-primary btn-sm" id="open-add-skill-modal">
+                        <i class="fa-solid fa-plus"></i> Add Skill
+                    </button>
+                </div>
+
+                <div id="admin-skills-container" class="admin-skills-container">
+                    <p class="empty-state">Loading skills...</p>
+                </div>
+            </section>
+
+            <!-- TAB 5: EXPERIENCE & EDUCATION TIMELINE -->
+            <section id="tab-experience" class="admin-tab-pane">
+                <div class="section-toolbar glass-card">
+                    <div class="toolbar-title">
+                        <h2>Experience & Education Timeline</h2>
+                        <p>Manage your academic degrees, certifications, and work experience milestones.</p>
+                    </div>
+                    <button class="btn btn-primary btn-sm" id="open-add-timeline-modal">
+                        <i class="fa-solid fa-plus"></i> Add Milestone
+                    </button>
+                </div>
+
+                <div id="admin-timeline-container" class="admin-timeline-grid">
+                    <p class="empty-state">Loading experience & education...</p>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- ====================================================================== -->
+    <!-- 3. MODALS (ADD/EDIT PROJECT, SKILL, & TIMELINE)                        -->
+    <!-- ====================================================================== -->
+
+    <!-- PROJECT MODAL -->
+    <div id="project-modal" class="admin-modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content glass-card">
+            <button class="modal-close" id="close-project-modal">&times;</button>
+            <h3 id="project-modal-title">Add New Project</h3>
+            
+            <form id="project-form">
+                <input type="hidden" id="proj-id">
+
+                <div class="form-row">
+                    <div class="form-group flex-1">
+                        <label for="proj-title" class="form-label">Project Title *</label>
+                        <input type="text" id="proj-title" class="form-input" placeholder="e.g. AI Vision Tracker" required>
+                    </div>
+                    <div class="form-group flex-1">
+                        <label for="proj-category" class="form-label">Category *</label>
+                        <select id="proj-category" class="form-input" required>
+                            <option value="ai_ml">AI & Machine Learning</option>
+                            <option value="algorithms">Algorithms & Core CS</option>
+                            <option value="web">Full Stack & Web Dev</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="proj-short-desc" class="form-label">Short Summary (Visible on card) *</label>
+                    <input type="text" id="proj-short-desc" class="form-input" placeholder="Brief 1-2 sentence description" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="proj-full-desc" class="form-label">Full Detailed Description (Visible in modal)</label>
+                    <textarea id="proj-full-desc" class="form-textarea" placeholder="Comprehensive breakdown of features, architecture, and results..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="proj-tags" class="form-label">Tech Stack Tags (Comma separated)</label>
+                    <input type="text" id="proj-tags" class="form-input" placeholder="Python, PyTorch, OpenCV, YOLO">
+                </div>
+
+                <div class="form-group">
+                    <label for="proj-image" class="form-label">Image Preview URL</label>
+                    <input type="url" id="proj-image" class="form-input" placeholder="https://images.unsplash.com/...">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group flex-1">
+                        <label for="proj-github" class="form-label">GitHub Repository URL</label>
+                        <input type="text" id="proj-github" class="form-input" placeholder="https://github.com/saikoushik2108/...">
+                    </div>
+                    <div class="form-group flex-1">
+                        <label for="proj-live" class="form-label">Live Demo URL</label>
+                        <input type="text" id="proj-live" class="form-input" placeholder="https://... or #">
+                    </div>
+                </div>
+
+                <div class="form-group checkbox-group">
+                    <label>
+                        <input type="checkbox" id="proj-featured"> 
+                        <span>Mark as Featured Project</span>
+                    </label>
+                </div>
+
+                <div class="modal-form-actions">
+                    <button type="button" class="btn btn-outline" id="cancel-project-btn">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="save-project-btn">Save Project</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- SKILL MODAL -->
+    <div id="skill-modal" class="admin-modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content glass-card modal-sm">
+            <button class="modal-close" id="close-skill-modal">&times;</button>
+            <h3 id="skill-modal-title">Add New Skill</h3>
+            
+            <form id="skill-form">
+                <input type="hidden" id="skill-id">
+
+                <div class="form-group">
+                    <label for="skill-category" class="form-label">Category *</label>
+                    <input type="text" id="skill-category" class="form-input" placeholder="e.g. Programming Languages, AI & ML, Core CS" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="skill-name" class="form-label">Skill Name *</label>
+                    <input type="text" id="skill-name" class="form-input" placeholder="e.g. Python (AI/ML & Automation)" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="skill-percent" class="form-label">Proficiency Percentage (1 - 100) *</label>
+                    <input type="number" id="skill-percent" class="form-input" min="1" max="100" value="85" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="skill-icon" class="form-label">FontAwesome Icon Class</label>
+                    <input type="text" id="skill-icon" class="form-input" placeholder="fa-brands fa-python">
+                </div>
+
+                <div class="modal-form-actions">
+                    <button type="button" class="btn btn-outline" id="cancel-skill-btn">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="save-skill-btn">Save Skill</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- TIMELINE (EXPERIENCE & EDUCATION) MODAL -->
+    <div id="timeline-modal" class="admin-modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content glass-card">
+            <button class="modal-close" id="close-timeline-modal">&times;</button>
+            <h3 id="timeline-modal-title">Add Milestone</h3>
+            
+            <form id="timeline-form">
+                <input type="hidden" id="timeline-id">
+
+                <div class="form-row">
+                    <div class="form-group flex-1">
+                        <label for="timeline-type" class="form-label">Milestone Type *</label>
+                        <select id="timeline-type" class="form-input" required>
+                            <option value="experience">Experience / Work</option>
+                            <option value="education">Education / Degree</option>
+                        </select>
+                    </div>
+                    <div class="form-group flex-1">
+                        <label for="timeline-period" class="form-label">Time Period *</label>
+                        <input type="text" id="timeline-period" class="form-input" placeholder="e.g. 2024 - Present or 2024 - 2028" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="timeline-title" class="form-label">Role / Degree Title *</label>
+                    <input type="text" id="timeline-title" class="form-input" placeholder="e.g. B.E. in Computer Science (AI & ML) or AI Project Developer" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="timeline-institution" class="form-label">Institution / Organization *</label>
+                    <input type="text" id="timeline-institution" class="form-input" placeholder="e.g. CBIT Hyderabad or Academic Projects" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="timeline-desc" class="form-label">Description</label>
+                    <textarea id="timeline-desc" class="form-textarea" placeholder="Brief summary of responsibilities, academic focus, or achievements..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="timeline-highlights" class="form-label">Key Highlights (1 per line)</label>
+                    <textarea id="timeline-highlights" class="form-textarea" placeholder="Top academic performance with strong CGPA (9.5+)&#10;Active member of AI & Coding clubs"></textarea>
+                </div>
+
+                <div class="modal-form-actions">
+                    <button type="button" class="btn btn-outline" id="cancel-timeline-btn">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="save-timeline-btn">Save Milestone</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="supabase-config.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>

@@ -227,70 +227,117 @@ function storeMessageLocally(msg) {
 }
 
 /**
- * Fetches project list from Supabase or fallback
+ * Fetches project list with real-time sync between Admin CMS & Supabase
  */
 async function fetchProjectsData() {
+    const localCustomized = localStorage.getItem('portfolio_projects_customized');
+    const localData = localStorage.getItem('portfolio_custom_projects');
+
     if (supabaseClient) {
         try {
             const { data, error } = await supabaseClient
                 .from('projects')
                 .select('*')
-                .order('display_order', { ascending: true });
+                .order('created_at', { ascending: false });
 
-            if (!error && data && data.length > 0) {
-                return data;
+            if (!error && Array.isArray(data)) {
+                if (data.length > 0) {
+                    return data;
+                }
+                if (localCustomized === 'true' && localData) {
+                    return JSON.parse(localData);
+                }
             }
         } catch (err) {
-            console.warn('Could not fetch projects from Supabase, using fallback:', err);
+            console.warn('Could not fetch projects from Supabase:', err);
         }
     }
+
+    if (localCustomized === 'true' && localData) {
+        try {
+            return JSON.parse(localData);
+        } catch (e) {}
+    }
+
     return FALLBACK_PROJECTS;
 }
 
 /**
- * Fetches skills data from Supabase or fallback
+ * Fetches skills data with real-time sync between Admin CMS & Supabase
  */
 async function fetchSkillsData() {
+    const localCustomized = localStorage.getItem('portfolio_skills_customized');
+    const localData = localStorage.getItem('portfolio_custom_skills');
+
     if (supabaseClient) {
         try {
             const { data, error } = await supabaseClient
                 .from('skills')
                 .select('*')
-                .order('display_order', { ascending: true });
+                .order('proficiency_percentage', { ascending: false });
 
-            if (!error && data && data.length > 0) {
-                return data;
+            if (!error && Array.isArray(data)) {
+                if (data.length > 0) {
+                    return data;
+                }
+                if (localCustomized === 'true' && localData) {
+                    return JSON.parse(localData);
+                }
             }
         } catch (err) {
-            console.warn('Could not fetch skills from Supabase, using fallback:', err);
+            console.warn('Could not fetch skills from Supabase:', err);
         }
     }
+
+    if (localCustomized === 'true' && localData) {
+        try {
+            return JSON.parse(localData);
+        } catch (e) {}
+    }
+
     return FALLBACK_SKILLS;
 }
 
 /**
- * Fetches timeline data (Education & Experience) from Supabase or fallback
+ * Fetches timeline data with real-time sync between Admin CMS & Supabase
  */
 async function fetchTimelineData() {
+    const localCustomized = localStorage.getItem('portfolio_timeline_customized');
+    const localData = localStorage.getItem('portfolio_custom_timeline');
+
     if (supabaseClient) {
         try {
             const { data, error } = await supabaseClient
                 .from('timeline')
                 .select('*')
-                .order('display_order', { ascending: true });
+                .order('created_at', { ascending: false });
 
-            if (!error && data && data.length > 0) {
-                return data;
+            if (!error && Array.isArray(data)) {
+                if (data.length > 0) {
+                    return data;
+                }
+                if (localCustomized === 'true' && localData) {
+                    return JSON.parse(localData);
+                }
             }
         } catch (err) {
-            console.warn('Could not fetch timeline from Supabase, using fallback:', err);
+            console.warn('Could not fetch timeline from Supabase:', err);
         }
     }
+
+    if (localCustomized === 'true' && localData) {
+        try {
+            return JSON.parse(localData);
+        } catch (e) {}
+    }
+
     return FALLBACK_TIMELINE;
 }
 
 // Export functions to global scope
 window.PortfolioAPI = {
+    getClient: () => supabaseClient,
+    getSupabaseConfig: () => SUPABASE_CONFIG,
     isSupabaseConfigured,
     submitContactMessage,
     fetchProjectsData,
